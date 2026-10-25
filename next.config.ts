@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io", // ✅ domínio do UploadThing
+        hostname: "utfs.io",
       },
       {
         protocol: "https",
-        hostname: "*.ufs.sh", // ✅ novo domínio do UploadThing
+        hostname: "*.ufs.sh",
       },
     ],
   },

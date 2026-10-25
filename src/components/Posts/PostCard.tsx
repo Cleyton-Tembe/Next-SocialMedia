@@ -1,6 +1,11 @@
-"use client"
+"use client";
 
-import { CreateComment, DeletePost, GetPost, ToggleLike } from "@/actions/post-action";
+import {
+  CreateComment,
+  DeletePost,
+  GetPost,
+  ToggleLike,
+} from "@/actions/post-action";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -8,77 +13,86 @@ import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import Image from "next/image";
-import { Button, } from "../ui/button";
-import { HeartIcon, LogInIcon, MessageCircleIcon, SendIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  HeartIcon,
+  LogInIcon,
+  MessageCircleIcon,
+  SendIcon,
+} from "lucide-react";
 import { Textarea } from "../ui/textarea";
-import { formatDistanceToNow} from "date-fns"
+import { formatDistanceToNow } from "date-fns";
 import DeleteAlertDialog from "./DeleteAlertDialog";
 
-type Posts = Awaited<ReturnType<typeof GetPost>>
-type Post = NonNullable<Posts>[number]
+type Posts = Awaited<ReturnType<typeof GetPost>>;
+type Post = NonNullable<Posts>[number];
 
-const PostCard = ({post, dbUserId} : {post: Post; dbUserId: string | null}) => {
+const PostCard = ({
+  post,
+  dbUserId,
+}: {
+  post: Post;
+  dbUserId: string | null;
+}) => {
+  const { user } = useUser();
+  const [newComment, setNewComment] = useState("");
+  const [showComments, setShowComments] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [hasLiked, setHasLiked] = useState(
+    post.Likes.some((like) => like.userId === dbUserId),
+  );
+  const [optmisticlikes, setOptimisticLikes] = useState(post._count.Likes);
 
-    const {user} = useUser()
-    const [newComment, setNewComment] = useState("")
-    const [showComments, setShowComments] = useState(false)
-    const [isCommenting, setIsCommenting] = useState(false)
-    const [isLiking, setIsLiking] = useState(false)
-    const [isDeleting, setIsDeleting] = useState(false)
-    const [hasLiked, setHasLiked] = useState(post.Likes.some(like => like.userId === dbUserId))
-    const [optmisticlikes, setOptimisticLikes] = useState(post._count.Likes)
+  useEffect(() => {}, []);
 
+  const HandleLike = async () => {
+    if (isLiking) return;
 
-    useEffect(() => {
-      
-    }, [])
-
-    const HandleLike = async () => {
-        if(isLiking) return
-
-        try {
-            setIsLiking(true)
-            setHasLiked(prev => !prev)
-            setOptimisticLikes(prev => prev + (hasLiked ? -1 : 1))
-            await ToggleLike(post.id)
-        } catch (error) {
-            setOptimisticLikes(post._count.Likes)
-            setHasLiked(false)
-            console.error("HandleLike: ", error)
-        } finally {
-            setIsLiking(false)
-        }
+    try {
+      setIsLiking(true);
+      setHasLiked((prev) => !prev);
+      setOptimisticLikes((prev) => prev + (hasLiked ? -1 : 1));
+      await ToggleLike(post.id);
+    } catch (error) {
+      setOptimisticLikes(post._count.Likes);
+      setHasLiked(false);
+      console.error("HandleLike: ", error);
+    } finally {
+      setIsLiking(false);
     }
-    const HandleAddComment = async () => {
-        if (!newComment.trim() || isCommenting) return;
-        try {
-          setIsCommenting(true);
-          const result = await CreateComment(post.id, newComment);
-          if (result?.success) {
-            toast.success("Comment posted successfully");
-            setNewComment("");
-          }
-        } catch (error) {
-          toast.error("Failed to add comment:");
-          console.error("HandleAddComment:", error)
-        } finally {
-          setIsCommenting(false);
-        }
-    };
-    const HandleDeletePost = async () => {
-        if (isDeleting) return;
-        try {
-          setIsDeleting(true);
-          const result = await DeletePost(post.id);
-          if (result.success) toast.success("Post deleted successfully");
-          else throw new Error(result.error);
-        } catch (error) {
-          toast.error("Failed to delete post");
-          console.error("HandleDeletePost:", error)
-        } finally {
-          setIsDeleting(false);
-        }
-    };
+  };
+  const HandleAddComment = async () => {
+    if (!newComment.trim() || isCommenting) return;
+    try {
+      setIsCommenting(true);
+      const result = await CreateComment(post.id, newComment);
+      if (result?.success) {
+        toast.success("Comment posted successfully");
+        setNewComment("");
+      }
+    } catch (error) {
+      toast.error("Failed to add comment:");
+      console.error("HandleAddComment:", error);
+    } finally {
+      setIsCommenting(false);
+    }
+  };
+  const HandleDeletePost = async () => {
+    if (isDeleting) return;
+    try {
+      setIsDeleting(true);
+      const result = await DeletePost(post.id);
+      if (result.success) toast.success("Post deleted successfully");
+      else throw new Error(result.error);
+    } catch (error) {
+      toast.error("Failed to delete post");
+      console.error("HandleDeletePost:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -127,12 +141,13 @@ const PostCard = ({post, dbUserId} : {post: Post; dbUserId: string | null}) => {
 
           {/* POST IMAGE */}
           {post.image && (
-            <div className="rounded-lg relative overflow-hidden">
+            <div className="rounded-lg w-full aspect-video relative overflow-hidden">
               <Image
                 fill
                 src={post.image}
                 alt="Post content"
                 className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 700px"
               />
             </div>
           )}
@@ -208,7 +223,9 @@ const PostCard = ({post, dbUserId} : {post: Post; dbUserId: string | null}) => {
                           {formatDistanceToNow(new Date(comment.createdAt))} ago
                         </span>
                       </div>
-                      <p className="text-sm wrap-break-word">{comment.content}</p>
+                      <p className="text-sm wrap-break-word">
+                        {comment.content}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -261,6 +278,6 @@ const PostCard = ({post, dbUserId} : {post: Post; dbUserId: string | null}) => {
       </CardContent>
     </Card>
   );
-}
+};
 
-export default PostCard
+export default PostCard;

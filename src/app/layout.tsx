@@ -7,7 +7,6 @@ import { ThemeProvider } from "@/components/global/theme-provider";
 import NavBar from "@/components/global/NavBar";
 import SideBar from "@/components/global/SideBar";
 import { Toaster } from "react-hot-toast";
-import SocketContext from "@/Context/SocketContext";
 
 const robotoHeading = Roboto({
   subsets: ["latin"],
@@ -65,11 +64,7 @@ export default function RootLayout({
                     <div className="hidden lg:block lg:col-span-3">
                       <SideBar />
                     </div>
-                    <div className="lg:col-span-9">
-                      <SocketContext>
-                      {children}
-                      </SocketContext>
-                      </div>
+                    <div className="lg:col-span-9">{children}</div>
                   </div>
                 </div>
               </main>

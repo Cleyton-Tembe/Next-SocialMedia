@@ -9,7 +9,7 @@ export async function CreateNewPost(content: string, imageUrl: string) {
     const userId = await GetDbUserId();
 
     if (!userId) return;
-
+    console.log("image url: ", imageUrl);
     const newpost = await prisma.post.create({
       data: {
         content,
@@ -201,7 +201,8 @@ export async function DeletePost(postId: string) {
     });
 
     if (!post) throw new Error("Post not found");
-    if (post.authorId !== userId) throw new Error("Unauthorized - no delete permission");
+    if (post.authorId !== userId)
+      throw new Error("Unauthorized - no delete permission");
 
     await prisma.post.delete({
       where: { id: postId },

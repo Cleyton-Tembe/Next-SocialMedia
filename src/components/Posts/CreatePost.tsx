@@ -64,6 +64,7 @@ function CreatePost() {
                 endpoint="postImage"
                 value={imageUrl}
                 onChange={(url) => {
+                  console.log("image while uploading: ", url, imageUrl);
                   setImageUrl(url);
                   if (!url) setShowImageUpload(false);
                 }}

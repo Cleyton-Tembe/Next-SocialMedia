@@ -1,7 +1,6 @@
 import { GetPost } from "@/actions/post-action";
 import { GetDbUserId } from "@/actions/user-action";
 import Recomended from "@/components/Follow/Recomended";
-import OnlineUsers from "@/components/global/OnlineUsers";
 import CreatePost from "@/components/Posts/CreatePost";
 import PostCard from "@/components/Posts/PostCard";
 import { currentUser } from "@clerk/nextjs/server";
@@ -27,7 +26,6 @@ export default async function Home() {
 
       <div className="hidden lg:block lg:col-span-4 space-y-5">
         <Recomended />
-        <OnlineUsers />
       </div>
     </main>
   );
