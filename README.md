@@ -6,7 +6,7 @@ Rede social full-stack em Next.js com publicações, imagens, gostos, comentári
 
 ## Demo
 
-🔗 **[Ver demo](COLOCA_AQUI_O_LINK_DA_DEMO)**
+🔗 **[Ver demo](https://next-social-media-62o8.vercel.app/)**
 
 ## Funcionalidades
 
